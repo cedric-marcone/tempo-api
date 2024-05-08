@@ -57,6 +57,83 @@ const enum Weekday {
 //   },
 // ];
 
+// Du dimanche au vendredi de 9h à 11h et de 15h à 16h, sauf le mercredi de 16h à 17h
+
+function generateWeekday(from: Date, to: Date, rule: WeekdayRecurrenceRule) {
+  const result: Array<Date> = [];
+  for (const weekday of rule.byweekday) {
+    const date = nextDateFromWeekday(from, to, weekday);
+    if (date === null) {
+      continue;
+    }
+    console.log("WEEKLY", date);
+    result.push(...generate(date, to, rule.subRules));
+  }
+  return result;
+}
+
+function generateMonthday(from: Date, to: Date, rule: MonthdayRecurrenceRule) {
+  const result: Array<Date> = [];
+  for (const day of rule.bymonthday) {
+    const date = nextDateFromMonthDay(from, to, day);
+    if (date === null) {
+      continue;
+    }
+    console.log("MONTHLY", date);
+    result.push(...generate(date, to, rule.subRules));
+  }
+  return result;
+}
+
+function generateMonth(from: Date, to: Date, rule: MonthlyRecurrenceRule) {
+  const result: Array<Date> = [];
+  for (const month of rule.bymonth) {
+    const date = nextDateFromMonth(from, to, month);
+    if (date === null) {
+      continue;
+    }
+    console.log("YEARLY", date);
+    result.push(...generate(date, to, rule.subRules));
+  }
+  return result;
+}
+
+function generateTime(from: Date, to: Date, rule: TimeRecurrenceRule) {
+  const result: Array<Date> = [];
+  const date = new Date(from);
+  date.setUTCHours(0, 0, 0, 0);
+  while (date < to) {
+    if (rule.byhour && !rule.byhour.includes(date.getUTCHours())) {
+      date.setUTCHours(date.getUTCHours() + 1);
+      continue;
+    }
+    if (rule.byminute && !rule.byminute.includes(date.getUTCMinutes())) {
+      date.setUTCMinutes(date.getUTCMinutes() + 1);
+      continue;
+    }
+    console.log(date);
+    result.push(new Date(date));
+    date.setUTCHours(date.getUTCHours() + rule.interval);
+  }
+  return result;
+}
+
+const x = [
+  {
+    type: "weekday",
+    byweekday: [Weekday.SU, Weekday.MO, Weekday.TU, Weekday.TH, Weekday.FR],
+    subRules: [
+      { type: "time", byhour: [9], duration: 2 },
+      { type: "time", byhour: [15], duration: 1 },
+    ],
+  },
+  {
+    type: "weekday",
+    byweekday: [Weekday.WE],
+    subRules: [{ type: "time", byhour: [16], duration: 1 }],
+  },
+];
+
 type MonthlyRecurrenceRule = {
   type: "month";
   interval: number;
