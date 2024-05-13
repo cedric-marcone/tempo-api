@@ -1,10 +1,35 @@
-export function* iterate(from: Date, to: Date) {
-  const date = new Date(from);
-  date.setUTCHours(0, 0, 0, 0);
+import { Frequency } from "./constants";
 
+export function* iterate(from: Date, to: Date, iteration: Iteration = { freq: Frequency.DAILY, interval: 1 }) {
+  const date = new Date(from);
+
+  let count = 0;
   while (date <= to) {
+    if (iteration.count && count >= iteration.count) {
+      break;
+    }
     yield new Date(date);
-    date.setUTCDate(date.getUTCDate() + 1);
+    count++;
+    switch (iteration.freq) {
+      case Frequency.YEARLY:
+        date.setUTCFullYear(date.getUTCFullYear() + iteration.interval);
+        break;
+      case Frequency.MONTHLY:
+        date.setUTCMonth(date.getUTCMonth() + iteration.interval);
+        break;
+      case Frequency.WEEKLY:
+        date.setUTCDate(date.getUTCDate() + 7 * iteration.interval);
+        break;
+      case Frequency.DAILY:
+        date.setUTCDate(date.getUTCDate() + iteration.interval);
+        break;
+      case Frequency.HOURLY:
+        date.setUTCHours(date.getUTCHours() + iteration.interval);
+        break;
+      case Frequency.MINUTELY:
+        date.setUTCMinutes(date.getUTCMinutes() + iteration.interval);
+        break;
+    }
   }
 }
 
