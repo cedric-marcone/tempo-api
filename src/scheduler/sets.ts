@@ -48,3 +48,11 @@ export function isSubset<T>(a: Set<T>, b: Set<T>) {
 export function isSuperset<T>(a: Set<T>, b: Set<T>) {
   return isSubset(b, a);
 }
+
+export function numberToDate(xs: Set<number>) {
+  const dates = new Set<Date>();
+  for (const x of xs) {
+    dates.add(new Date(x));
+  }
+  return dates;
+}
