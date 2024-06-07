@@ -1,4 +1,5 @@
 {
+  "name": "tempo-api",
   "type": "module",
   "scripts": {
     "start": "bun run src/index.ts",
